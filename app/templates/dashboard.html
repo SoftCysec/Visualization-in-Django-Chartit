@@ -1,0 +1,115 @@
+{% extends 'base.html' %}
+
+{% load chartit %}
+
+{% block title %}Welcome To PowerVis{% endblock %}
+
+{% block content %}
+
+<div class="content">
+  <div class="row">
+    <div class="col-md-12">
+      <div class="card">
+        <div class="card-header">
+          <h5 class="title">Upload CSV File</h5>
+        </div>
+        <div class="card-body">
+          <form action="{% url 'upload' %}" method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            <input type="file" name="csv_file">
+            <button type="submit" class="btn btn-primary">Upload</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  {% if columns %}
+  <div class="row">
+    <div class="col-md-12">
+      <div class="card">
+        <div class="card-header">
+          <h5 class="title">Generate Charts</h5>
+        </div>
+        <div class="card-body">
+          <form action="{% url 'chart' %}" method="post">
+            {% csrf_token %}
+            <div class="form-group">
+              <label for="chart_title">Chart Title:</label>
+              <input type="text" class="form-control" id="chart_title" name="chart_title">
+            </div>
+            <div class="form-group">
+              <label for="chart_type">Chart Type:</label>
+              <select class="form-control" id="chart_type" name="chart_type">
+                <option value="line">Line Chart</option>
+                <option value="bar">Bar Chart</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="x_axis">X-Axis:</label>
+              <select class="form-control" id="x_axis" name="x_axis">
+                {% for column in columns %}
+                  <option value="{{ column }}">{{ column }}</option>
+                {% endfor %}
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="y_axis">Y-Axis:</label>
+              <select class="form-control" id="y_axis" name="y_axis">
+                {% for column in columns %}
+                  <option value="{{ column }}">{{ column }}</option>
+                {% endfor %}
+              </select>
+            </div>
+            <button type="submit" class="btn btn-primary">Generate Chart</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+  {% endif %}
+
+  {% if line_chart or bar_chart %}
+  <div class="row">
+    {% if line_chart %}
+    <div class="col-md-6">
+      <div class="card">
+        <div class="card-header">
+          <h5 class="title">Line Chart</h5>
+        </div>
+        <div class="card-body">
+          {% chart line_chart %}
+        </div>
+      </div>
+    </div>
+    {% endif %}
+    {% if bar_chart %}
+    <div class="col-md-6">
+      <div class="card">
+        <div class="card-header">
+          <h5 class="title">Bar Chart</h5>
+        </div>
+        <div class="card-body">
+          {% chart bar_chart %}
+        </div>
+      </div>
+    </div>
+    {% endif %}
+  </div>
+  {% else %}
+
+  <div class="row">
+    <div class="col-md-12">
+      <div class="card">
+        <div class="card-header">
+          <h5 class="title">No Chart Data Available</h5>
+        </div>
+        <div class="card-body">
+          <p>Please upload a CSV file and generate a chart.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}
